@@ -1,0 +1,31 @@
+This CFEngine Build module inventories information about physical memory.
+
+This module expects ~dmidecode~ to be found in paths (=$(paths.dmidecode)=) and currently only targets Linux.
+* Configuration
+
+- =inventory_physical_memory:cache.file= :: The file in which to cache inventory, defaults to =$(sys.statedir)/$(this.namespace)-$(this.bundle).dat= (=/var/cfengine/state/inventory_physical_memory-cache.dat=).
+
+  #+begin_src json
+    {
+        "variables": {
+            "inventory_physical_memory:cache.file": {
+                "value": "/var/cache/cfengine/inventory_physical_memory.dat"
+            }
+        }
+    }
+#+end_src
+
+- =inventory_physical_memory:cache.minutes= :: The number of minutes after which the cache should be invalidated, defaults to =43200= (~ 1 month).
+
+  #+begin_src json
+    {
+        "variables": {
+            "inventory_physical_memory:cache.minutes": {
+                "value": "1"
+            }
+        }
+    }
+#+end_src
+
+* Inventory
+- Maximum Capacity :: The maximum amount of memory the system can have installed, derived from ~dmidecode~

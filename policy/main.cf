@@ -1,0 +1,63 @@
+body file control
+{
+        namespace => "inventory_physical_memory";
+}
+bundle agent main
+{
+  methods:
+    linux::
+      "inventory_physical_memory:cache_expire";
+      "inventory_physical_memory:cache";
+      "inventory_physical_memory:cache_read";
+}
+bundle agent cache
+{
+  vars:
+    linux::
+      "file" string => "$(sys.statedir)/$(this.namespace)-$(this.bundle).dat";
+      "minutes" string => "43200"; # ~1 month
+
+  commands:
+    linux::
+      # dmidecode -t 16 | awk -F ':' '/^\tMaximum Capacity:.*$/ {gsub(/^[ \t]+/, "", $1) gsub(/^\s+/, "", $2); print "^context=inventory_physical_memory\n" "^meta=inventory,attribute_name=" $1 "\n" "=maximum_capicity=" $2}'  > /tmp/m.txt
+      #
+      # Extract the line with Maximum Capacity, strip leading whitespace from
+      # the first field and second field, print the value in module protocol
+      # format
+
+      "$(default:paths.dmidecode)"
+        arglist => { "-t", "16",
+                     "|",
+                     "$(paths.awk)", "-F", "':'",
+                     `'/^\tMaximum Capacity:.*$/ gsub(/^\s+/, "", $2); print "^context=namespace_$(this.namespace)\n" "^meta=inventory,attribute_name=Physical memory maximum capacity\n" "=maximum_capacity=" $2}'`,
+                     ">",
+                     "'$(file)'" },
+        contain => default:in_shell_and_silent,
+        if => not( fileexists( $(file) ) );
+}
+bundle agent cache_expire
+{
+  files:
+    linux::
+      "$(cache.file)"
+        delete => default:tidy,
+        #if => isnewerthan( "/proc/1/cmdline", "$($(this.namespace):cache.file)" ),
+        if => isnewerthan( "$(this.promise_filename)", "$($(this.namespace):cache.file)" ),
+        comment => "If the machine has been rebooted, it makes sense to invalidate the cache";
+
+      "$(cache.file)"
+        delete => default:tidy,
+        file_select => default:older_than(0, 0, 0, 0, "$($(this.namespace):cache.minutes)", 0),
+        comment => "If cache is older than the specified number of minutes we invalidate it";
+}
+
+bundle agent cache_read
+{
+  classes:
+    linux::
+      "cache_read" expression => read_module_protocol("$($(this.namespace):cache.file)");
+  reports:
+    default:inform_mode.cache_read::
+      "Read from cache $(cache.file), but maximum_capicity not found"
+        if => not( isvariable( "default:namespace_$(this.namespace).maximum_capacity" ) );
+}

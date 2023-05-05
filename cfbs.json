@@ -1,0 +1,17 @@
+{
+  "name": "inventory-physical-memory",
+  "description": "Inventory information about physical memory.",
+  "provides": {
+    "inventory-physical-memory": {
+      "description": "Inventory information about physical memory.",
+      "tags": ["inventory"],
+      "repo": "https://github.com/nickanderson/cfengine-inventory-physical-memory",
+      "by": "https://github.com/nickanderson/",
+      "steps": [
+        "copy ./policy/main.cf services/cfbs/inventory-physical-memory/main.cf",
+        "policy_files services/cfbs/inventory-physical-memory/main.cf",
+        "bundle inventory_physical_memory:main"
+      ]
+    }
+  }
+}
