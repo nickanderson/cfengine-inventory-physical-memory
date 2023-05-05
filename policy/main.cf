@@ -14,8 +14,12 @@ bundle agent cache
 {
   vars:
     linux::
-      "file" string => "$(sys.statedir)/$(this.namespace)-$(this.bundle).dat";
-      "minutes" string => "43200"; # ~1 month
+      "file"
+        string => "$(sys.statedir)/$(this.namespace)-$(this.bundle).dat",
+        if => not( isvariable( "$(this.namespace):$(this.bundle).file" ) );
+      "minutes"
+        string => "43200", # ~1 month
+        if => not( isvariable( "$(this.namespace):$(this.bundle).minutes" ) );
 
   commands:
     linux::
