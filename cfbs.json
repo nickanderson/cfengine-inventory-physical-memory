@@ -10,7 +10,7 @@
       "steps": [
         "copy ./policy/main.cf services/cfbs/inventory-physical-memory/main.cf",
         "policy_files services/cfbs/inventory-physical-memory/main.cf",
-        "bundle inventory_physical_memory:main"
+        "bundles inventory_physical_memory:main"
       ]
     }
   }
