@@ -33,7 +33,7 @@ bundle agent cache
         arglist => { "-t", "16",
                      "|",
                      "$(paths.awk)", "-F", "':'",
-                     `'/^\tMaximum Capacity:.*$/ gsub(/^\s+/, "", $2); print "^context=namespace_$(this.namespace)\n" "^meta=inventory,attribute_name=Physical memory maximum capacity\n" "=maximum_capacity=" $2}'`,
+                     `'/^[ \t]*Maximum Capacity:.*$/ {gsub(/^\s+/, "", $2); print "^context=namespace_$(this.namespace)\n" "^meta=inventory,attribute_name=Physical memory maximum capacity\n" "=maximum_capacity=" $2}'`,
                      ">",
                      "'$(file)'" },
         contain => default:in_shell_and_silent,
