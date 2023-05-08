@@ -30,4 +30,5 @@ This module expects ~dmidecode~ to be found in paths (=$(paths.dmidecode)=) and 
 
 * Inventory
 - Physical memory maximum capacity :: The maximum amount of memory the system can have installed, derived from ~dmidecode~. If =Maximum Capacity= is not found in table 16 of the ~dmidecode~ table (e.g. on many virtual machines) no inventory will be reported.
-    [[https://raw.github.com/nickanderson/cfengine-inventory-physical-memory/master/media/mission-portal-pinned-inventory.png]]
+
+[[https://raw.github.com/nickanderson/cfengine-inventory-physical-memory/master/media/mission-portal-pinned-inventory.png]]
